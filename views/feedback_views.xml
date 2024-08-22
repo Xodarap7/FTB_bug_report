@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="ftb_bug_report_ticket_kanban" model="ir.ui.view">
+        <field name="name">Ticket Kanban View</field>
+        <field name="model">ftb_bug_report.ticket</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="stage_id" default_order="update_stage_date">
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div t-attf-class="o_kanban_card_header">
+                                <div class="o_kanban_card_header_title">
+                                    <div class="o_primary" t-if="!selection_mode">
+                                        <field name="name"/>
+                                    </div>
+                                    <div class="o_primary" t-if="selection_mode">
+                                        <field name="name"/>
+                                    </div>
+                                </div>
+                                <!-- Кнопка для доп. меню (сверху справа карточки) -->
+                                <div class="o_kanban_manage_button_section" t-if="!selection_mode">
+                                    <a class="o_kanban_manage_toggle_button" href="#"><i class="fa fa-ellipsis-v" role="img" aria-label="Manage" title="Manage"/></a>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                            </div>
+                            <div class="o_kanban_record_bottom" name="studio_auto_kanban_bottom">
+                                <div class="oe_kanban_bottom_left" name="studio_auto_kanban_bottom_left"><span>Дата обновления статуса:</span></div>
+                                <div class="oe_kanban_bottom_right" name="studio_auto_kanban_bottom_right">
+                                    <field name="update_stage_date" />
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="ftb_bug_report_ticket_list" model="ir.ui.view">
+        <field name="name">Ticket List View</field>
+        <field name="model">ftb_bug_report.ticket</field>
+        <field name="arch" type="xml">
+            <tree delete="0">
+                <field name="name" />
+                <field name="author" />
+                <field name="update_stage_date" />
+                <field name="stage_id" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="ftb_bug_report_ticket_form" model="ir.ui.view">
+        <field name="name">Ticket Form View</field>
+        <field name="model">ftb_bug_report.ticket</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="to_consideration_button"
+                        type="object"
+                        invisible="1"
+                        string="For Rewiew"/>
+                    <button name="to_work_button"
+                        type="object"
+                        string="Take on work"
+                        attrs="{'invisible':[('stage_id', '!=', %(FTB_bug_report.stage_consideration)d)]}"/>
+                    <button name="to_done_button"
+                        type="object"
+                        string="Done"
+                        attrs="{'invisible':[('stage_id', '!=', %(FTB_bug_report.stage_in_progress)d)]}"/>
+                    <button name="to_rejected_button"
+                        type="object"
+                        string="Reject"
+                        attrs="{'invisible': [('stage_id', 'in', [%(FTB_bug_report.stage_rejected)d, %(FTB_bug_report.stage_done)d])]}"/>
+                    <field name="stage_id" widget="statusbar" options="{'clickable': '0'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group> 
+                            <field name="ticket_code" />
+                            <field name="ticket_type" />
+                            <field name="proposual_type" attrs="{'invisible': [('ticket_type', '!=', 'proposual')]}" />
+                            <field name="author" />
+                            <field name="update_stage_date" readonly="1"/>
+                        </group>
+                        <group> 
+                        </group>
+                    </group>
+                    <group>
+                        <group> 
+                            <field name="bug_link" attrs="{'invisible': [('ticket_type', '!=', 'proposual')]}" />
+                            <field name="user_link" attrs="{'invisible': [('ticket_type', '!=', 'report')]}" />
+                            <field name="game_link" attrs="{'invisible': [('ticket_type', '!=', 'edit_game')]}" />
+                            <field name="bgg_link" attrs="{'invisible': [('ticket_type', '!=', 'add_game')]}" />
+                            <field name="hg_link" attrs="{'invisible': [('ticket_type', '!=', 'add_game')]}" />
+                        </group>
+                        <group> 
+                        </group>
+                        <field name="description" widget="text" />
+                    </group>
+                </sheet>
+                <div class="oe_chatter" name="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                    <field name="activity_ids"/>
+                </div>
+            </form> 
+        </field>
+    </record>
+
+    <record id="ftb_bug_report_ticket_stage_list" model="ir.ui.view">
+        <field name="name">Ticket Stage List View</field>
+        <field name="model">ftb_bug_report.ticket.stage</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="name" />
+            </tree>
+        </field>
+    </record> 
+
+    <record model="ir.actions.act_window" id="ftb_ticket_action">
+        <field name="name">Ticket</field>
+        <field name="res_model">ftb_bug_report.ticket</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+    <record model="ir.actions.act_window" id="ftb_ticket_stage_action">
+        <field name="name">Ticket Stage</field>
+        <field name="res_model">ftb_bug_report.ticket.stage</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem name="Feedback"
+        id="feedback_base_menu"
+        sequence="7"
+    />
+
+        <menuitem name="Tickets"
+            id="ticket_menu"
+            parent="feedback_base_menu"
+            sequence="4"
+            action="ftb_ticket_action" />
+
+        <menuitem name="Settings"
+            id="settings_menu"
+            parent="feedback_base_menu"
+            sequence="100" />
+        
+        <menuitem name="Ticket Stages"
+            id="setting_stage_menu"
+            parent="settings_menu"
+            sequence="4"
+            action="ftb_ticket_stage_action" />
+        
+</odoo>

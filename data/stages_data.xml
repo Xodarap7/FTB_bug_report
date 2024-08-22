@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="stage_consideration" model="ftb_bug_report.ticket.stage">
+            <field name="name">Under Consideration</field>
+        </record>
+
+        <record id="stage_in_progress" model="ftb_bug_report.ticket.stage">
+            <field name="name">In Progress</field>
+        </record>
+
+        <record id="stage_done" model="ftb_bug_report.ticket.stage">
+            <field name="name">Done</field>
+        </record>
+
+        <record id="stage_rejected" model="ftb_bug_report.ticket.stage">
+            <field name="name">Rejected</field>
+        </record>
+    </data>
+</odoo>
