@@ -12,6 +12,6 @@
     "data": [
         "security/ir.model.access.csv",
         "data/stages_data.xml",
-        "views/feedback_views.xml"
+        "views/feedback_views.xml",
     ],
 }

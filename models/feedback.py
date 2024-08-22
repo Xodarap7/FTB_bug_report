@@ -11,6 +11,7 @@ PROPOSUAL_TYPES = [
     ("bug_report", _("Bug Report")),
 ]
 
+
 class FTBFeedback(models.Model):
     _name = "ftb_bug_report.ticket"
     _description = "Ticket"
@@ -25,22 +26,19 @@ class FTBFeedback(models.Model):
 
     ticket_code = fields.Char(string="Ticket Code")
 
-    ticket_type = fields.Selection(
-        TICKET_TYPES,
-        string="Ticket Type"
-    )
+    ticket_type = fields.Selection(TICKET_TYPES, string="Ticket Type")
 
     proposual_type = fields.Selection(
         PROPOSUAL_TYPES,
         string="Proposual Type",
-        help="Vision if Ticket Type is Proposual"
+        help="Vision if Ticket Type is Proposual",
     )
 
     stage_id = fields.Many2one(
-        comodel_name='ftb_bug_report.ticket.stage',
+        comodel_name="ftb_bug_report.ticket.stage",
         string="Stage",
         default=lambda self: self.env.ref("FTB_bug_report.stage_consideration"),
-        tracking=True
+        tracking=True,
     )
 
     update_stage_date = fields.Date(string="Date of last status changed")
@@ -64,27 +62,19 @@ class FTBFeedback(models.Model):
     hg_link = fields.Char(string="HG Link")
 
     def to_consideration_button(self):
-        new_stage = self.env.ref(
-            "FTB_bug_report.stage_consideration"
-        )
+        new_stage = self.env.ref("FTB_bug_report.stage_consideration")
         self._change_stage(new_stage)
 
     def to_work_button(self):
-        new_stage = self.env.ref(
-            "FTB_bug_report.stage_in_progress"
-        )
+        new_stage = self.env.ref("FTB_bug_report.stage_in_progress")
         self._change_stage(new_stage)
 
     def to_done_button(self):
-        new_stage = self.env.ref(
-            "FTB_bug_report.stage_done"
-        )
+        new_stage = self.env.ref("FTB_bug_report.stage_done")
         self._change_stage(new_stage)
 
     def to_rejected_button(self):
-        new_stage = self.env.ref(
-            "FTB_bug_report.stage_rejected"
-        )
+        new_stage = self.env.ref("FTB_bug_report.stage_rejected")
         self._change_stage(new_stage)
 
     def _change_stage(self, stage):
@@ -98,15 +88,15 @@ class FTBFeedback(models.Model):
                 if not rec.description
                 else rec.description[:20]
                 if len(rec.description) > 20
-                else rec.description 
+                else rec.description
             )
             rec.name = f"[{rec.ticket_code}] {dict(self._fields['ticket_type'].selection).get(rec.ticket_type) or ''}-{description+'...'}"
-
 
 
 class FTBFeedbackTicket(models.Model):
     _name = "ftb_bug_report.ticket.stage"
     _description = "Ticket stage"
 
-    name = fields.Char(string="Name", )
-
+    name = fields.Char(
+        string="Name",
+    )
